@@ -54,6 +54,27 @@ Notes:
 - GPU runners require a GitHub Team/Enterprise org plan, so standard Actions stays CPU-only.
 - Jobs are capped at 6 hours; the workflow times out at 350 minutes.
 
+## Results
+
+First full run (`small`, 812,288 params, 4,000 steps, batch 12):
+
+- Validation loss: **4.16 → 1.975**
+- Training time: **7m57s** on GitHub's free 4-vCPU public runner
+- Checkpoint: `checkpoints/best.pt` (9.3 MB)
+
+Sample (`temperature 0.8`, `top-k 40`):
+
+```text
+ROMEO:
+By, hold it at love thou but you of sall,
+What I the cemenat I on thy ame chirding in a noony.
+
+KING RARD OF CHARD IORKE:
+May me as beardion leads?
+```
+
+It's a 0.8M-parameter character model, so expect Shakespeare-shaped gibberish with real words and line structure, not coherent dialogue. More steps / the `medium` preset improve it.
+
 ## Notes
 
 - This is a base language model, not an instruction-following chatbot. It continues text in the style of its training data.
