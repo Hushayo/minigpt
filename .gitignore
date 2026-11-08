@@ -1,0 +1,6 @@
+__pycache__/
+checkpoints/
+checkpoints_*/
+train.log
+data/*.bin
+data/input.txt

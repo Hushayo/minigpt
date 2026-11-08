@@ -1,0 +1,76 @@
+name: train
+
+on:
+  workflow_dispatch:
+    inputs:
+      preset:
+        description: Model size
+        type: choice
+        options: [tiny, small, medium]
+        default: small
+      steps:
+        description: Training steps
+        type: number
+        default: 4000
+      batch_size:
+        description: Batch size
+        type: number
+        default: 12
+
+permissions:
+  contents: read
+
+concurrency:
+  group: train-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install PyTorch (CPU)
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install numpy
+
+      - name: Prepare data
+        run: python data/prepare.py
+
+      - name: Train
+        run: |
+          python train.py \
+            --preset ${{ inputs.preset }} \
+            --steps ${{ inputs.steps }} \
+            --batch-size ${{ inputs.batch_size }} \
+            2>&1 | tee train.log
+
+      - name: Generate sample
+        run: |
+          mkdir -p samples
+          python generate.py \
+            --checkpoint checkpoints/best.pt \
+            --prompt "ROMEO:" \
+            --tokens 500 \
+            --temperature 0.8 \
+            --top-k 40 \
+            --seed 1 | tee samples/sample.txt
+
+      - name: Upload checkpoints
+        uses: actions/upload-artifact@v4
+        with:
+          name: minigpt-${{ inputs.preset }}-${{ github.run_number }}
+          path: |
+            checkpoints/best.pt
+            checkpoints/last.pt
+            train.log
+            samples/sample.txt
+          retention-days: 30
