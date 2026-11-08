@@ -134,6 +134,7 @@ def main():
             "model": model.state_dict(),
             "optimizer": optimizer.state_dict(),
             "config": asdict(config),
+            "meta": meta,
             "step": step,
             "best_val": val,
             "args": vars(args),

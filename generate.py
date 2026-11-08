@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import sys
 
 import torch
 
@@ -25,22 +26,26 @@ def parse_args():
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     args = parse_args()
     if args.seed is not None:
         torch.manual_seed(args.seed)
 
-    with open(os.path.join(DATA_DIR, "meta.json"), "r", encoding="utf-8") as f:
-        meta = json.load(f)
+    ckpt = torch.load(args.checkpoint, map_location=args.device, weights_only=False)
+    meta = ckpt.get("meta")
+    if meta is None:
+        with open(os.path.join(DATA_DIR, "meta.json"), "r", encoding="utf-8") as f:
+            meta = json.load(f)
     stoi = meta["stoi"]
     itos = {int(k): v for k, v in meta["itos"].items()}
 
-    ckpt = torch.load(args.checkpoint, map_location=args.device, weights_only=False)
     config = GPTConfig(**ckpt["config"])
     model = GPT(config).to(args.device)
     model.load_state_dict(ckpt["model"])
     model.eval()
     print(f"checkpoint step {ckpt['step']} | best val {ckpt.get('best_val', float('nan')):.4f} | "
-          f"params {model.num_params():,}\n", flush=True)
+          f"params {model.num_params():,} | data {meta.get('dataset', '?')}\n", flush=True)
 
     # Unknown characters are dropped so any prompt can be typed.
     prompt_ids = [stoi[c] for c in args.prompt if c in stoi]

@@ -3,6 +3,11 @@ name: train
 on:
   workflow_dispatch:
     inputs:
+      dataset:
+        description: Training corpus
+        type: choice
+        options: [shakespeare, wikitext2]
+        default: shakespeare
       preset:
         description: Model size
         type: choice
@@ -40,10 +45,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install torch --index-url https://download.pytorch.org/whl/cpu
-          pip install numpy
+          pip install numpy pyarrow
 
       - name: Prepare data
-        run: python data/prepare.py
+        run: python data/prepare.py --dataset ${{ inputs.dataset }}
 
       - name: Train
         run: |
@@ -67,7 +72,7 @@ jobs:
       - name: Upload checkpoints
         uses: actions/upload-artifact@v4
         with:
-          name: minigpt-${{ inputs.preset }}-${{ github.run_number }}
+          name: minigpt-${{ inputs.dataset }}-${{ inputs.preset }}-${{ github.run_number }}
           path: |
             checkpoints/best.pt
             checkpoints/last.pt

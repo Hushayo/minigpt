@@ -11,6 +11,15 @@ python train.py --preset small  # train (~35 min on 2 CPU cores)
 python generate.py --prompt "ROMEO:" --tokens 500
 ```
 
+Train on factual text instead (WikiText-2, ~12 MB of Wikipedia articles):
+
+```powershell
+python data\prepare.py --dataset wikitext2
+python train.py --preset medium --steps 8000
+```
+
+This changes the writing style to encyclopedia prose; it does **not** turn a 3M-parameter model into a knowledge base. Checkpoints embed their tokenizer, so both datasets can coexist.
+
 Resume an interrupted run with `python train.py --preset small --resume`.
 
 ## What's here

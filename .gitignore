@@ -1,6 +1,11 @@
 __pycache__/
 checkpoints/
 checkpoints_*/
+ci-artifact/
+samples/
 train.log
 data/*.bin
+data/*.parquet
+data/meta.json
 data/input.txt
+data/wikitext-2-raw/
