@@ -65,24 +65,30 @@ Notes:
 
 ## Results
 
-First full run (`small`, 812,288 params, 4,000 steps, batch 12):
+**Small — Shakespeare** (812,288 params, 4,000 steps, batch 12)
 
 - Validation loss: **4.16 → 1.975**
 - Training time: **7m57s** on GitHub's free 4-vCPU public runner
-- Checkpoint: `checkpoints/best.pt` (9.3 MB)
-
-Sample (`temperature 0.8`, `top-k 40`):
+- Checkpoint: `checkpoints/small_best.pt` (9.3 MB)
 
 ```text
 ROMEO:
 By, hold it at love thou but you of sall,
 What I the cemenat I on thy ame chirding in a noony.
-
-KING RARD OF CHARD IORKE:
-May me as beardion leads?
 ```
 
-It's a 0.8M-parameter character model, so expect Shakespeare-shaped gibberish with real words and line structure, not coherent dialogue. More steps / the `medium` preset improve it.
+**Medium — WikiText-2** (2,908,224 params, 8,000 steps, batch 12)
+
+- Validation loss: **4.5 → 1.531**
+- Training time: **~1 hr** on the same runner
+- Checkpoint: `checkpoints/wiki_medium_best.pt` (33 MB)
+
+```text
+The internet is a first before the National Child with the Admeria .
+Don many based her in the inflight life of the Ondern Reson , ...
+```
+
+It writes in an encyclopedic register but does not reliably store facts. A 3M-parameter character model learns grammar and style, not a knowledge base.
 
 ## Notes
 
